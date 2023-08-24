@@ -2,6 +2,8 @@
 
 import tkinter as tk
 from tkinter import ttk
+#Module to be able to manipulate the timer breaks
+from collections import deque
 
 
 # Class Pomodoro Timer 
@@ -22,12 +24,14 @@ class PomodoroTimer(tk.Tk):
         timer_frame = Timer(container)
         timer_frame.grid(row=0,column=0,sticky="NESW")
 
-
+# Class Timer 
 class Timer(ttk.Frame):
     def __init__(self,parent):
         super().__init__(parent)
         self.current_time = tk.StringVar(value="00:10")
         self.time_running = True
+        self.time_order = ["Pomodoro","Short Break","Pomodoro","Short Break","Pomodoro","Long Break"] # Time Breakers
+        self.timer_schedule = deque(self.time_order) # deque provides an O(1) time complexity for append and pop operations as compared to a list 
 
         timer_frame = ttk.Frame(self,height="100")
         timer_frame.grid(pady=(10,0),sticky="NSEW")
@@ -52,10 +56,19 @@ class Timer(ttk.Frame):
             
             self.current_time.set(f"{minutes:02d}:{seconds:02d}")
             self.after(1000,self.decrement_time)
+        
+        elif self.time_running and current_time == "00:00":
+            self.timer_schedule.rotate(-1) # Rotate the deque (n) steps.If (-n) is negative, rotate to the left.
+            next_up = self.timer_schedule[0] # => First element after rotate.
+            # Timers Options
+            if next_up == "Pomodoro":
+                self.current_time.set("25:00")
+            elif next_up == "Short Break":
+                self.current_time.set("05:00")
+            elif next_up == "Long Break":
+                self.current_time.set("15:00")
 
-
-
-
+            self.after(1000,self.decrement_time)
 
 
 app = PomodoroTimer()

@@ -33,11 +33,16 @@ class Timer(ttk.Frame):
         self.time_order = ["Pomodoro","Short Break","Pomodoro","Short Break","Pomodoro","Long Break"] # Time Breakers
         self.timer_schedule = deque(self.time_order) # deque provides an O(1) time complexity for append and pop operations as compared to a list 
 
+        # Timer Description Label
+        self.current_timer_description = tk.StringVar(value=self.timer_schedule[0]) # current timer desc string var
+        timer_descriptin = ttk.Label(self,textvariable=self.current_timer_description) # Description Label
+        timer_descriptin.grid(row=0,column=0,sticky="w",padx=(10,0),pady=(10,0))
+
         timer_frame = ttk.Frame(self,height="100")
         timer_frame.grid(pady=(10,0),sticky="NSEW")
 
         timer_counter = ttk.Label(timer_frame,textvariable=self.current_time)
-        timer_counter.grid()
+        timer_counter.place(relx=0.5,rely=0.5,anchor="center")
         self.decrement_time()
 
     def decrement_time(self):
@@ -60,6 +65,8 @@ class Timer(ttk.Frame):
         elif self.time_running and current_time == "00:00":
             self.timer_schedule.rotate(-1) # Rotate the deque (n) steps.If (-n) is negative, rotate to the left.
             next_up = self.timer_schedule[0] # => First element after rotate.
+            self.current_timer_description.set(next_up) # Change to current description
+            
             # Timers Options
             if next_up == "Pomodoro":
                 self.current_time.set("25:00")

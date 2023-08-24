@@ -50,7 +50,7 @@ class Timer(ttk.Frame):
         # Buttons Container Frame
         buttons_container = ttk.Frame(self,padding=10)
         buttons_container.grid(row=2,column= 0,sticky="EW")
-        buttons_container.columnconfigure((0,1),weight=1)
+        buttons_container.columnconfigure((0,1,2),weight=1)
 
         # Start Button
         self.start_button = ttk.Button(
@@ -69,6 +69,15 @@ class Timer(ttk.Frame):
             cursor="hand2"
         )
         self.stop_button.grid(row=0,column=1,sticky="EW")
+
+        # Reset Button
+        reset_button = ttk.Button(
+            buttons_container,
+            text="Reset",
+            command=self.reset_timer,
+            cursor="hand2"
+        )
+        reset_button.grid(row=0,column=2,sticky="EW")
 
         self.decrement_time()
     
@@ -90,6 +99,13 @@ class Timer(ttk.Frame):
         if self._timer_decrement_job:
             self.after_cancel(self._timer_decrement_job)
             self._timer_decrement_job = None 
+    
+    def reset_timer(self):
+        # Reset timer
+        self.stop_timer()
+        current_time = self.current_time.set("25:00")
+        self.timer_schedule = deque(self.time_order)
+        self.current_timer_description.set(self.timer_schedule[0])
 
     def decrement_time(self):
         current_time = self.current_time.get()

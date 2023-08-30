@@ -15,29 +15,35 @@ class PomodoroTimer(tk.Tk):
         self.columnconfigure(0,weight=1)
         self.rowconfigure(1,weight=1)
 
+        self.pomodoro = tk.StringVar(value=25)
+        self.short_break = tk.StringVar(value = 5)
+        self.long_break = tk.StringVar(value = 15)
+        self.time_order = ["Pomodoro","Short Break","Pomodoro","Short Break","Pomodoro","Long Break"] # Time Breakers
+        self.timer_schedule = deque(self.time_order) # deque provides an O(1) time complexity for append and pop operations as compared to a list 
+
+        
         #Container
         container = ttk.Frame(self)
         container.grid()
         container.columnconfigure(0,weight=1)
 
         #Timer Frame
-        timer_frame = Timer(container)
+        timer_frame = Timer(container,self)
         timer_frame.grid(row=0,column=0,sticky="NESW")
 
 # Class Timer 
 class Timer(ttk.Frame):
-    def __init__(self,parent):
+    def __init__(self,parent,controller):
         super().__init__(parent)
-        self.current_time = tk.StringVar(value="00:10")
-        self.time_running = True
-        self.time_order = ["Pomodoro","Short Break","Pomodoro","Short Break","Pomodoro","Long Break"] # Time Breakers
-        self.timer_schedule = deque(self.time_order) # deque provides an O(1) time complexity for append and pop operations as compared to a list 
+        self.controller = controller
+        self.current_time = tk.StringVar(value=f"{self.controller.pomodoro.get()}:00")
+        self.time_running = False
         self._timer_decrement_job = None # (-) private It will help us to be able to manipulate the load of the frame
         
         # Timer Description Label
-        self.current_timer_description = tk.StringVar(value=self.timer_schedule[0]) # current timer desc string var
-        timer_descriptin = ttk.Label(self,textvariable=self.current_timer_description) # Description Label
-        timer_descriptin.grid(row=0,column=0,sticky="w",padx=(10,0),pady=(10,0))
+        self.current_timer_description = tk.StringVar(value=self.controller.timer_schedule[0]) # current timer desc string var
+        timer_description = ttk.Label(self,textvariable=self.current_timer_description) # Description Label
+        timer_description.grid(row=0,column=0,sticky="w",padx=(10,0),pady=(10,0))
         
         # Timer Container Frame
         timer_frame = ttk.Frame(self,height="100")
@@ -103,9 +109,10 @@ class Timer(ttk.Frame):
     def reset_timer(self):
         # Reset timer
         self.stop_timer()
-        current_time = self.current_time.set("25:00")
-        self.timer_schedule = deque(self.time_order)
-        self.current_timer_description.set(self.timer_schedule[0])
+        pomodoro_time = self.controller.pomodoro.get()
+        current_time = self.current_time.set(f"{int(pomodoro_time):02d}:00")
+        self.timer_schedule = deque(self.controller.time_order)
+        self.current_timer_description.set(self.controller.timer_schedule[0])
 
     def decrement_time(self):
         current_time = self.current_time.get()
@@ -125,17 +132,20 @@ class Timer(ttk.Frame):
             self._timer_decrement_job= self.after(1000,self.decrement_time)
         
         elif self.time_running and current_time == "00:00":
-            self.timer_schedule.rotate(-1) # Rotate the deque (n) steps.If (-n) is negative, rotate to the left.
-            next_up = self.timer_schedule[0] # => First element after rotate.
+            self.controller.timer_schedule.rotate(-1) # Rotate the deque (n) steps.If (-n) is negative, rotate to the left.
+            next_up = self.controller.timer_schedule[0] # => First element after rotate.
             self.current_timer_description.set(next_up) # Change to current description
 
             # Timers Options
             if next_up == "Pomodoro":
-                self.current_time.set("25:00")
+                pomodoro = self.controller.pomodoro.get()
+                self.current_time.set(f"{int(pomodoro):02d}:00")
             elif next_up == "Short Break":
-                self.current_time.set("05:00")
+                short_break = self.controller.short_break.get()
+                self.current_time.set(f"{int(short_break):02d}:00")
             elif next_up == "Long Break":
-                self.current_time.set("15:00")
+                long_break = self.controller.long_break.get()
+                self.current_time.set(f"{int(long_break):02d}:00")
 
             self._timer_decrement_job= self.after(1000,self.decrement_time)
 

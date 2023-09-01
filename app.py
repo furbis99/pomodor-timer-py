@@ -33,5 +33,9 @@ class PomodoroTimer(tk.Tk):
         timer_frame = Timer(container,self)
         timer_frame.grid(row=0,column=0,sticky="NESW")
 
+        #Setting Frame
+        setting_frame = Settings(container,self)
+        setting_frame.grid(row=0,column=0,sticky="NESW")
+
 app = PomodoroTimer()
 app.mainloop()

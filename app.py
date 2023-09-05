@@ -29,13 +29,27 @@ class PomodoroTimer(tk.Tk):
         container.grid()
         container.columnconfigure(0,weight=1)
 
-        #Timer Frame
-        timer_frame = Timer(container,self)
-        timer_frame.grid(row=0,column=0,sticky="NESW")
+        self.frames = {}
 
+        #Timer Frame
+        timer_frame = Timer(container,self,lambda: self.show_frame(Settings))
+        timer_frame.grid(row=0,column=0,sticky="NESW")
+    
         #Setting Frame
-        setting_frame = Settings(container,self)
+        setting_frame = Settings(container,self,lambda: self.show_frame(Timer))
         setting_frame.grid(row=0,column=0,sticky="NESW")
 
-app = PomodoroTimer()
-app.mainloop()
+        
+        self.frames[Timer] = timer_frame
+        self.frames[Settings] = setting_frame
+        
+        self.show_frame(Timer)
+    
+    def show_frame(self,container):
+        frame = self.frames[container]
+        frame.tkraise()
+
+
+if __name__ == '__main__':
+    app = PomodoroTimer()
+    app.mainloop()

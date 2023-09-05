@@ -4,7 +4,7 @@
 import tkinter as tk
 from tkinter import ttk
 class Settings(ttk.Frame):
-    def __init__(self,parent,controller):
+    def __init__(self,parent,controller,show_frames):
         super().__init__(parent)
         # Column and row config
         self.columnconfigure(0,weight=1)
@@ -62,3 +62,16 @@ class Settings(ttk.Frame):
 
         for child in setting_container.winfo_children():
             child.grid_configure(padx=5,pady=5) #add a padding to all elements inside the container
+
+        # Button Container
+        button_container = ttk.Frame(self)
+        button_container.grid(sticky="EW",padx=10)
+        button_container.columnconfigure(0,weight=1)
+
+        timer_button = ttk.Button(
+            button_container,
+            text="Back",
+            command=show_frames,
+            cursor="hand2"
+        )
+        timer_button.grid(column=0,row=0,sticky="EW",padx=2)

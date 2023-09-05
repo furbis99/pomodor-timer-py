@@ -5,7 +5,7 @@ from tkinter import ttk
 from collections import deque
 
 class Timer(ttk.Frame):
-    def __init__(self,parent,controller):
+    def __init__(self,parent,controller,command):
         super().__init__(parent)
         self.controller = controller
         self.current_time = tk.StringVar(value=f"{self.controller.pomodoro.get()}:00")
@@ -16,6 +16,10 @@ class Timer(ttk.Frame):
         self.current_timer_description = tk.StringVar(value=self.controller.timer_schedule[0]) # current timer desc string var
         timer_description = ttk.Label(self,textvariable=self.current_timer_description) # Description Label
         timer_description.grid(row=0,column=0,sticky="w",padx=(10,0),pady=(10,0))
+
+        # Button setting
+        settings_button = ttk.Button(self,text="Settings",command=command,cursor='hand2')
+        settings_button.grid(row=0,column=1,sticky="E",padx=(10,0),pady=(10,0))
         
         # Timer Container Frame
         timer_frame = ttk.Frame(self,height="100")

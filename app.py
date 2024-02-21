@@ -2,7 +2,7 @@
 
 import tkinter as tk
 from tkinter import ttk
-#Module to be able to manipulate the timer breaks
+# Module to be able to manipulate the timer breaks
 from collections import deque
 
 from frames import Timer 
